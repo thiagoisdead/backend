@@ -11,7 +11,7 @@ const recaptchaKey = process.env.RECAPTCHA_SECRET_KEY
 // imports
 
 router.post('/signup', async (req, res) => {
-  const { name, email, password, captchaToken } = req.body;
+  const { name, email, password, nickname, captchaToken } = req.body;
   if (!captchaToken) {
     return res.status(400).json({ message: "Token de recaptcha não fornecido!" });
   }
@@ -33,7 +33,11 @@ router.post('/signup', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "Email já registrado" })
     }
-    const newUser = new User({ name, email, password });
+    const existingNickname = await User.findOne({ nickname });
+    if (existingNickname) {
+      return res.status(400).json({ message: "Nickname já utilizado" })
+    }
+    const newUser = new User({ name, email, password, nickname });
     await newUser.save();
     const token = jwt.sign({ userId: newUser._id }, jwtSecret, {
       expiresIn: "30d",
@@ -44,7 +48,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 router.post("/login", async (req, res) => {
-  const { email, password, captchaToken } = req.body;
+  const { email, password, captchaToken, nickname } = req.body;
   if (!captchaToken) {
     return res.status(400).json({ message: "Captcha não enviado." })
   }
@@ -78,6 +82,7 @@ router.post("/login", async (req, res) => {
         id: user.userId,
         name: user.name,
         email: user.email,
+        nickname: user.nickname,
       }
     });
   } catch (error) {
