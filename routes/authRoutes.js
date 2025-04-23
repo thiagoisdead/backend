@@ -4,13 +4,15 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 const axios = require('axios');
 const User = require('../models/user')
+const blockIfAuthenticated = require('../middlewares/blockIfAuthenticated');
+
 require('dotenv').config();
 const jwtSecret = process.env.JWT_SECRET;
 const recaptchaKey = process.env.RECAPTCHA_SECRET_KEY
 
 // imports
 
-router.post('/signup', async (req, res) => {
+router.post('/signup', blockIfAuthenticated, async (req, res) => {
   const { name, email, password, nickname, captchaToken } = req.body;
   if (!captchaToken) {
     return res.status(400).json({ message: "Token de recaptcha não fornecido!" });
@@ -47,7 +49,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ error: "Erro ao cadastrar usuário:" + err.message });
   }
 });
-router.post("/login", async (req, res) => {
+router.post("/login", blockIfAuthenticated, async (req, res) => {
   const { email, password, captchaToken, nickname } = req.body;
   if (!captchaToken) {
     return res.status(400).json({ message: "Captcha não enviado." })
