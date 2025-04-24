@@ -5,8 +5,8 @@ const cors = require('cors');
 const app = express();
 const port = 3001;
 
-const userRoutes = require('./routes/userRoutes'); // 👈 nova 
-const authRoutes = require('./routes/authRoutes'); // 👈 nova 
+const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes'); 
 
 
 app.use(cors({
@@ -15,8 +15,8 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use('/user', userRoutes); // 👈 adiciona aqui a rota dos usuários
-app.use('/auth', authRoutes); // 👈 adiciona aqui a rota de autenticação
+app.use('/user', userRoutes); 
+app.use('/auth', authRoutes); 
 
 
 connectToDb();
