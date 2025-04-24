@@ -1,9 +1,9 @@
 const bcrypt = require("bcryptjs");
 
 (async () => {
-  const senhaPlana = "minhasenha";
+  const senhaPlana = "senhateste";
   const hash = await bcrypt.hash(senhaPlana, 10);
 
-  const valid = await bcrypt.compare("minhasenha", hash);
-  console.log(valid); // true
+  const valid = await bcrypt.compare("senhateste", hash);
+  console.log(valid); 
 })();
