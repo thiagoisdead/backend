@@ -6,14 +6,26 @@ const axios = require('axios');
 const User = require('../models/user')
 const blockIfAuthenticated = require('../middlewares/blockIfAuthenticated');
 
+const { loginLimiter, registerLimiter } = require('../middlewares/loginLimit');
+
 require('dotenv').config();
 const jwtSecret = process.env.JWT_SECRET;
 const recaptchaKey = process.env.RECAPTCHA_SECRET_KEY
 
 // imports
 
-router.post('/signup', blockIfAuthenticated, async (req, res) => {
+router.post('/signup', blockIfAuthenticated, registerLimiter, async (req, res) => {
   const { name, email, password, nickname, captchaToken } = req.body;
+
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+  if (!email || !emailRegex.test(email)) {
+    return res.status(400).json({ message: "E-mail inválido." });
+  }
+  if (!password || password.length < 4) {
+    return res.status(400).json({ message: "A senha deve ter pelo menos 4 caracteres." });
+  }
+
   if (!captchaToken) {
     return res.status(400).json({ message: "Token de recaptcha não fornecido!" });
   }
@@ -49,8 +61,18 @@ router.post('/signup', blockIfAuthenticated, async (req, res) => {
     res.status(500).json({ error: "Erro ao cadastrar usuário:" + err.message });
   }
 });
-router.post("/login", blockIfAuthenticated, async (req, res) => {
-  const { email, password, captchaToken, nickname } = req.body;
+router.post("/login", blockIfAuthenticated, loginLimiter, async (req, res) => {
+  const { email, password, captchaToken } = req.body;
+
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+  if (!email || !emailRegex.test(email)) {
+    return res.status(400).json({ message: "E-mail inválido." });
+  }
+  if (!password || password.length < 4) {
+    return res.status(400).json({ message: "A senha deve ter pelo menos 4 caracteres." });
+  }
+
   if (!captchaToken) {
     return res.status(400).json({ message: "Captcha não enviado." })
   }
