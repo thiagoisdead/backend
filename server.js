@@ -1,5 +1,6 @@
 const express = require('express');
 const connectToDb = require('./db')
+const helmet = require('helmet');
 const cors = require('cors');
 
 const app = express();
@@ -7,6 +8,9 @@ const port = 3001;
 
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes'); 
+
+app.use(helmet());
+app.use(helmet.frameguard({ action: 'SAMEORIGIN' }));
 
 
 app.use(cors({
@@ -20,8 +24,7 @@ app.use('/auth', authRoutes);
 
 
 connectToDb();
-app.listen(port, () => {
-    console.log(`Servidor rodando em http://localhost:${port}`);
+app.listen(port, () => {console.log(`Servidor rodando em http://localhost:${port}`);
 });
 
 
