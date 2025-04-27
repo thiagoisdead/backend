@@ -1,17 +1,17 @@
 const rateLimit = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000,
-    max: 6,
-    message: "Muitas tentativas de Login. Tente novamente após 10 minutos.",
+    windowMs: 5 * 60 * 1000,
+    max: 15,
+    message: "Muitas tentativas de Login. Tente novamente após 5 minutos.",
     standardHeaders: true, 
     legacyHeaders: false, 
 })
 
 const registerLimiter = rateLimit({
-    windowMs: 10 * 60 * 1000, 
+    windowMs: 5 * 60 * 1000, 
     max: 15, 
-    message: "Muitas tentativas de Registro. Tente novamente após 10 minutos.",
+    message: "Muitas tentativas de Registro. Tente novamente após 5 minutos.",
 });
 
 module.exports = { loginLimiter, registerLimiter };
