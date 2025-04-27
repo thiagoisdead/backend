@@ -3,27 +3,31 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
 const axios = require('axios');
-const User = require('../models/user')
-const blockIfAuthenticated = require('../middlewares/blockIfAuthenticated');
 
+const blockIfAuthenticated = require('../middlewares/blockIfAuthenticated');
 const { loginLimiter, registerLimiter } = require('../middlewares/loginLimit');
 
-require('dotenv').config();
+const User = require('../models/user')
+const BlacklistToken = require('../models/blacklistToken');
+
+const validatePassword = require('../utils/validatePassword')
+
 const jwtSecret = process.env.JWT_SECRET;
 const recaptchaKey = process.env.RECAPTCHA_SECRET_KEY
 
-// imports
+require('dotenv').config();
+
 
 router.post('/signup', blockIfAuthenticated, registerLimiter, async (req, res) => {
   const { name, email, password, nickname, captchaToken } = req.body;
-
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
   if (!email || !emailRegex.test(email)) {
     return res.status(400).json({ message: "E-mail inválido." });
   }
-  if (!password || password.length < 4) {
-    return res.status(400).json({ message: "A senha deve ter pelo menos 4 caracteres." });
+  const passwordValidation = validatePassword(password)
+  if (!passwordValidation) {
+    return res.status(400).json({ message: passwordValidation.message })
   }
 
   if (!captchaToken) {
@@ -112,6 +116,30 @@ router.post("/login", blockIfAuthenticated, loginLimiter, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
+router.post("/logout", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ message: 'Token não enviado.' })
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    const blacklistToken = new BlacklistToken({
+      token,
+      expiresAt,
+    })
+    await blacklistToken.save();
+
+    return res.status(200).json({ message: "Logout realizado com sucesso" });
+  } catch (err) {
+    return res.status(400).json({ message: "Token inválido ou expirado" });
   }
 });
 
