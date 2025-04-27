@@ -13,7 +13,7 @@ const eventSchema = new mongoose.Schema({
     date: { type: String, required: true },
     participants: { type: Number, required: true },
     creatorId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'User',
     }
 }, {
