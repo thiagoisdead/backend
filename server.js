@@ -15,6 +15,7 @@ app.use(helmet.frameguard({ action: 'SAMEORIGIN' }));
 
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'https://frontend-three-eosin-65.vercel.app'
 ];
 
