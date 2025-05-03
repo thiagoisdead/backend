@@ -12,10 +12,9 @@ const eventSchema = new mongoose.Schema({
     description: { type: String },
     date: { type: String, required: true },
     participants: { type: Number, required: true },
-    creatorId: {
-        type: String,
-        ref: 'User',
-    }
+    creatorId: { type: String, cref: 'User', },
+    permissions: { type: String },
+    address: {type: Object, required: true},
 }, {
     timestamps: true
 });
