@@ -16,7 +16,9 @@ app.use(helmet.frameguard({ action: 'SAMEORIGIN' }));
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'https://frontend-three-eosin-65.vercel.app'
+  'https://frontend-three-eosin-65.vercel.app', 
+  'https://758f-2804-7f0-9fc0-647-cd37-ef71-fe84-6eeb.ngrok-free.app', 
+  'https://cdb8-2804-7f0-9fc0-647-cd37-ef71-fe84-6eeb.ngrok-free.app',
 ];
 
 app.use(cors({
