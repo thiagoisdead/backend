@@ -7,7 +7,6 @@ const blockIfAuthenticated = (req, res, next) => {
 
   try {
     jwt.verify(token, jwtSecret);
-    console.log(res)
     return res.status(403).json({ message: 'Você já está logado. Não pode acessar esta página.' });
   } catch {
     return next(); 

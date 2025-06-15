@@ -5,5 +5,4 @@ const bcrypt = require("bcryptjs");
   const hash = await bcrypt.hash(senhaPlana, 10);
 
   const valid = await bcrypt.compare("senhateste", hash);
-  console.log(valid); 
 })();
